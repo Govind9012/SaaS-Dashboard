@@ -50,6 +50,23 @@ def test_auth_register_and_login():
     assert response["token_type"] == "bearer"
 
 
+def test_long_passwords_are_hashed_without_bcrypt_truncation():
+    password = "a" * 100
+    register_user("long_password@example.com", password)
+
+    valid_login = client.post(
+        "/api/auth/login",
+        json={"email": "long_password@example.com", "password": password},
+    )
+    truncated_collision = client.post(
+        "/api/auth/login",
+        json={"email": "long_password@example.com", "password": "a" * 72 + "b" * 28},
+    )
+
+    assert valid_login.status_code == 200, valid_login.text
+    assert truncated_collision.status_code == 401
+
+
 def test_standard_user_cannot_access_admin():
     register_user("standard@example.com", "StrongPass123")
     token_payload = login_user("standard@example.com", "StrongPass123")

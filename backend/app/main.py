@@ -33,7 +33,7 @@ from app.schemas import (
 )
 
 APP_TITLE = settings.app_name
-pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
+pwd_context = CryptContext(schemes=["bcrypt_sha256", "bcrypt"], deprecated="auto")
 oauth2_scheme = OAuth2PasswordBearer(tokenUrl="/api/auth/login")
 
 app = FastAPI(title=APP_TITLE, version="1.0.0", swagger_ui_parameters={"persistAuthorization": True})
